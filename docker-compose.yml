@@ -1,0 +1,68 @@
+version: '2'
+
+
+services:
+      mssql:
+        image: microsoft/mssql-server-linux
+        environment:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: StrongPassw0rd
+          MSSQL_PID: Developer
+        ports:
+          - '1401:1433'
+        volumes:
+          - ./backup-sql:/backup-sql
+        networks:
+          lemp-network:
+            ipv4_address: 172.20.1.3
+
+      web:
+        build: .
+        ports:
+          - "8081:80"
+        volumes:
+          - ../Fenix/code/laravel:/code
+          - ../Fenix/logs/nginx:/var/log/nginx
+          - ./config/nginx.conf:/etc/nginx/sites-enabled/default
+      #    - /etc/timezone:/etc/timezone:ro
+      #    - /etc/localtime:/etc/localtime:ro
+        networks:
+            lemp-network:
+              ipv4_address: 172.20.1.2
+
+      web2:
+        build: .
+        ports:
+          - "8082:80"
+        volumes:
+          - ../MP/code/laravel:/code
+          - ../MP/logs/nginx:/var/log/nginx
+          - ./config/nginx.conf:/etc/nginx/sites-enabled/default
+      #    - /etc/timezone:/etc/timezone:ro
+      #    - /etc/localtime:/etc/localtime:ro
+        networks:
+            lemp-network:
+              ipv4_address: 172.20.1.4
+
+      web3:
+        build: .
+        ports:
+          - "8083:80"
+        volumes:
+          - ../mpam/code/laravel:/code
+          - ../mpam/logs/nginx:/var/log/nginx
+          - ./config/nginx.conf:/etc/nginx/sites-enabled/default
+      #    - /etc/timezone:/etc/timezone:ro
+      #    - /etc/localtime:/etc/localtime:ro
+        networks:
+            lemp-network:
+              ipv4_address: 172.20.1.5
+
+networks:
+  lemp-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.1.1
